@@ -136,3 +136,118 @@ export const deleteAddress = async (req, res) => {
     res.status(500).json({ message: "Server error while deleting address." });
   }
 };
+
+
+//================================== Cart ===========================================
+
+
+// Add to Cart
+export const addToCart = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cart } = req.body;
+
+    const user = await User.findById(id);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.cart = [];
+    
+    // Add all items from the cart array
+    for (const item of cart) {
+      const existingItem = user.cart.find(
+        cartItem => cartItem.productId.toString() === item.productId
+      );
+
+      if (existingItem) {
+        existingItem.quantity = item.quantity;
+      } else {
+        user.cart.push({ 
+          productId: item.productId, 
+          quantity: item.quantity 
+        });
+      }
+    }
+
+    await user.save();
+    res.json(user.cart);
+  } catch (error) {
+    console.error("Error updating cart:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Remove from Cart
+export const removeFromCart = async (req, res) => {
+  try {
+    const { id, productId } = req.params;
+    const user = await User.findById(id);
+
+    user.cart = user.cart.filter(item => item.productId.toString() !== productId);
+
+    await user.save();
+    res.json(user.cart);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get Products from Cart
+export const getCart = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).populate("cart.productId");
+    res.json(user.cart);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+//================================== Wishlist ===========================================
+
+//  Add to Wishlist
+export const addToWishlist = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { productId } = req.body;
+
+    const user = await User.findById(id);
+    if (!user.wishlist.includes(productId)) {
+      user.wishlist.push(productId);
+    }
+
+    await user.save();
+    res.json(user.wishlist);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//  Remove from Wishlist
+export const removeFromWishlist = async (req, res) => {
+  try {
+    const { id, productId } = req.params;
+    const user = await User.findById(id);
+
+    user.wishlist = user.wishlist.filter(pid => pid.toString() !== productId);
+
+    await user.save();
+    res.json(user.wishlist);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// get from wishlist
+export const getWishlist = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).populate("wishlist");
+    res.json(user.wishlist);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

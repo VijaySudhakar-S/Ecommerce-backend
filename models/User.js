@@ -10,6 +10,11 @@ const addressSchema = new mongoose.Schema({
   isDefault: { type: Boolean, default: false }
 });
 
+const cartItemSchema = new mongoose.Schema({
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  quantity: { type: Number, default: 1 }
+});
+
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { 
@@ -32,7 +37,10 @@ const userSchema = new mongoose.Schema({
     type: String, 
     enum: ["active", "inactive", "suspended"], 
     default: "inactive"
-  }
+  },
+  cart: [cartItemSchema],
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }]
+
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

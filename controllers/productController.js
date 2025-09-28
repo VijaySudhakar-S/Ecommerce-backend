@@ -22,26 +22,6 @@ export const addProduct = async (req, res) => {
   }
 };
 
-// Get all products
-export const getProducts = async (req, res) => {
-  try {
-    const products = await Product.find().sort({ createdAt: -1 });
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch products", error });
-  }
-};
-
-// Get featured products (e.g., top 4 with highest rating)
-export const getFeaturedProducts = async (req, res) => {
-  try {
-    const products = await Product.find().sort({ rating: -1 }).limit(4);
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch featured products", error });
-  }
-};
-
 // Update product (Admin only)
 export const updateProduct = async (req, res) => {
   try {
@@ -75,6 +55,26 @@ export const deleteProduct = async (req, res) => {
     res.json({ message: "Product removed successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete product", error });
+  }
+};
+
+// Get all products
+export const getProducts = async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch products", error });
+  }
+};
+
+// Get featured products (e.g., top 4 with highest rating)
+export const getFeaturedProducts = async (req, res) => {
+  try {
+    const products = await Product.find().sort({ rating: -1 }).limit(4);
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch featured products", error });
   }
 };
 
